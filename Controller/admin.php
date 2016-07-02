@@ -70,7 +70,7 @@ class Admin {
     } elseif (isset($_GET['edytujSzablony'])) {
         $this->edytujSzablony($_GET['edytujSzablony']);
     } elseif (isset($_GET['klientFtp'])) {
-        $this->klientFtp();
+        $this->klientFtp($_GET['klientFtp']);
     } else {
 		    $this->uruchomKomponent();
 		}			
@@ -430,12 +430,38 @@ class Admin {
   }
   
   
-  private function klientFtp() {
+  private function klientFtp($idRoot = null) {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
+  		$this->set('dane', $this->AdminModel->pobierzDaneFtp($idRoot));
+  		
+  		/* 1. Dodaj katalog - pojawiające się okienko z podaniem nazwy oraz przyciskiem */
+  		/* 2. Wgraj plik - pojawiające się okienko z możliwością wgrania wielu plików */
+  		
   		$this->LayPanel = new LayoutPanelAdmin();
   		$this->set('adres', '../../');
   
   		$this->LayPanel->wyswietlStrone('./View/admin/klientFtp.view');
+  		
+  		if($_SERVER['REQUEST_METHOD'] == "POST"){
+  		
+  			if (isset($_POST['skasuj'])) {
+				echo "<script>alert('skasuj');</script>";
+  			}
+  			 
+  			if (isset($_POST['dodaj_katalog'])) {
+  				echo "<script>alert('dodaj katalog');</script>";  				
+  			}
+
+  			if (isset($_POST['dodaj_plik'])) {
+  				echo "<script>alert('dodaj plik');</script>";
+  			}
+  			
+  			if (isset($_POST['aktualizuj'])) {
+  				echo "<script>alert('aktualizuj');</script>";
+  			}
+  			
+  			echo "<script>window.location = 'admin.php?klientFtp'</script>";
+  		}  		
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";
   	}

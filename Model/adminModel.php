@@ -507,6 +507,55 @@ class AdminModel {
 		mysql_close($polaczenie);
 	}
 	
+	
+	public function pobierzDaneFtp($idRoot = null)
+	{
+		$config = new Config;
+		$info = new Information;
+			
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		if ( ($idRoot == '') OR ($idRoot == null) ) {
+			$idRoot = 0;	
+		}
+		
+		$sql = "SELECT * FROM komponent_generator_tresci_ftp WHERE `idRoot`=$idRoot ORDER BY nazwa ASC;";
+	
+		$wynik=mysql_query($sql) or die(mysql_error());
+		$i=0;
+		while ($linia=mysql_fetch_array($wynik)) {
+			$tab[$i]['id']=$linia['id'];
+			$tab[$i]['idRoot']=$linia['idRoot'];
+			$tab[$i]['nazwa']=$linia['nazwa'];
+			$tab[$i]['typ']=$linia['typ'];
+			$i++;
+		}
+	
+		mysql_close($polaczenie);
+		return $tab;
+	}
+	
+	/*dodokończenia*/
+	public function utworzKatalog($nazwa = null, $idRoot = null)
+	{
+		$config = new Config;
+		$info = new Information;
+			
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		$sql = "INSERT INTO komponent_generator_tresci_ftp (`id`, `idRoot`, `nazwa`, `typ`) VALUES ('', $idRoot, '$nazwa', 'dir');";
+	
+		mkdir("../../../../Files/".$nazwa, 0755);
+		
+		$wynik=mysql_query($sql) or die(mysql_error());
+	
+		mysql_close($polaczenie);
+		return $tab;
+	}	
 }
 
 ?>
