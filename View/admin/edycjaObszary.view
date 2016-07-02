@@ -1,0 +1,84 @@
+  <?php
+    /* INTERPRETOWANIE DANYCH OD KONTOLERA */
+    $obszary = $_SESSION['obszary'];
+    $idSzablonu = $_SESSION['idSzablonu'];
+  /* ######################################################### */
+  ?>
+
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Store/cms_admin/css/slidetabs/template.css' />
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Components/reklama-allegro/Store/css/style_reklama.css' />
+
+    <script type="text/javascript">jQuery(document).ready(function() {jQuery("#slidetabs_45").slidetabs({ totalWidth: 'auto', tabActive: 1, useWebKit: true, tabsScroll: true, touchSupport: true, ajaxCache: true, ajaxSpinner: true, ajaxError: 'Failed to load content', autoplayInterval: 5000, tabsAlignment: 'align_top', tabsToSlide: 1, tabsAnimSpeed: 300, buttonsFunction: 'slide', tabsEasing: '', contentAnimSpeed: 500, contentAnim: 'slideH', autoHeight: false, autoHeightSpeed: 300, textConversion: 'pb', contentEasing: 'easeInOutQuart', autoplay: false, orientation: 'horizontal' });});</script>
+    <script type='text/javascript' src='<?php echo $adres; ?>Store/cms_admin/js/slidetabs/jquery.slidetabs.pack.js'></script>
+    
+ <?php
+
+echo '        <div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align_top">
+
+            <div class="st_tabs">
+                  <a href="#" class="st_prev">prev</a>
+                  <a href="#" class="st_next">next</a>
+                  
+                  <div class="st_tabs_wrap">
+                      <ul class="st_tabs_ul">             
+                          <li>
+                              <a href="#reklamy" rel="reklamy" class="st_tab st_tab_2" style="width: 200px;">Edycja obszarów dla szablonu</a>
+                          </li>
+
+                      </ul>
+                  </div>
+              </div>';?>
+              
+              <div class="st_views">
+
+                             <div class="reklamy st_view" style="overflow-y: auto;">
+                                              <div class="st_view_inner">
+                                                 <div id="tab">
+
+                                                    <?php
+                                                      echo '<div style="margin-top:10px; margin-left:5px; overflow-x: auto;">';
+                                                        echo '<button onclick="window.location = \'admin.php?dodajObszar='.$idSzablonu.'\'" style="margin-left: 10px; margin-right: 10px; float: right;">Dodaj pole</button>';
+                                                      echo '</div>';
+                                                    ?>
+                                                    
+													<form action="admin.php?edytujObszary=<?php echo $idSzablonu; ?>"  method="post" accept-charset="utf-8" style="width: 460px; margin: 0 auto;">
+                                                      
+                                                      <div class="submit" style="float:left;"><input name="skasujObszary" type="submit" value="Skasuj zaznaczone" style="color: red;"></div>
+                                                      
+                                                      <div class="submit" style="float:right;"><input name='aktualizujObszary' type='submit' value='Aktualizuj' /></div>
+                                                      
+                                                      
+                                                      <div class="holder"></div>
+                                                      
+														  <table style="width: auto; clear:both; text-align: center; margin: 0 auto;">
+	                                                      <tbody id="itemContainer">
+	                                                      
+	                                                        <tr>
+	                                                          <th></th>
+	                                                          <th>Nazwa obszaru tekstowego</th>
+	                                                          <th>Krótki kod</th>      
+	                                                        </tr>
+	                                                      <?php
+	                                                        if(sizeof($obszary))
+	                                                        foreach ($obszary as $z) {
+	                                                          
+	                                                          echo"<tr>";
+	                                                          echo "<td><input type='checkbox' name='zaznacz[]' value='".$z[id]."'><input name='id[]' type='hidden' value='$z[id]' /></td>
+	                                                          <td><input type='text' name='nazwa[]' value='$z[nazwaObszaru]'></td>
+	                                                          <td>|Obszar".$z[id]."|</td>			
+	
+	                                                          </tr>";
+	                                                        }
+	                                                      ?>
+	                                                      
+	                                                      </tbody>
+	                                                      </table>
+                                                      </form>        
+                                                 </div>
+                                              </div>
+                                            </div>
+
+                                  
+    <?php                  
+        echo '</div>'; 
+              ?>

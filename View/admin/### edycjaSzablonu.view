@@ -1,0 +1,261 @@
+  <?php
+    /* INTERPRETOWANIE DANYCH OD KONTOLERA */
+    $pozycje = $_SESSION['pozycje'];
+    
+    $idGrupy = $_GET['edytujGrupe'];
+  /* ######################################################### */
+  ?>
+
+<style>
+button {
+    font-weight: bold;
+    padding: 3px 30px;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+input[type='submit'] {
+    font-weight: bold;
+    padding: 3px 30px;
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+#generujMenu {
+	background: red;
+    position: fixed;
+    right: 0px;
+    top: 220px;
+    padding: 10px;
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+    transition-duration:1s;
+    z-index: 999999999;
+}
+
+#generujMenu a {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    padding: 10px;
+    border-radius: 10px;
+    border: 2px solid;
+    text-align: center;
+    display: block;
+}
+
+#podglad {
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.65);
+    top: 0px;
+    left: 0px;
+    position: fixed;
+    z-index: 99999999;
+}
+
+#podgladBody { 
+    position: fixed;
+    top: 50px;
+    background: white;
+    overflow-y: scroll;
+    height: 580px;
+    border: 10px solid black;
+    transition-duration: 1s;
+    z-index: 99999999999;
+    width: 80%;
+    margin-left: auto;
+    margin-right: auto;
+    left: 0;
+    right: 0;
+    display: block;
+    border-radius: 10px;
+}
+
+.hiddenLeft {
+	margin-left: -620px;
+}
+
+.hiddenRight {
+	margin-right: -70px;
+}
+
+.firstRow {
+	background: #e2e2e2;
+}
+
+.secRow {
+	background: white;
+}
+</style>
+<br>
+
+<link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Store/cms_admin/css/slidetabs/template.css' />
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Components/reklama-allegro/Store/css/style_reklama.css' />
+
+    <script type="text/javascript">jQuery(document).ready(function() {jQuery("#slidetabs_45").slidetabs({ totalWidth: 'auto', tabActive: 1, useWebKit: true, tabsScroll: true, touchSupport: true, ajaxCache: true, ajaxSpinner: true, ajaxError: 'Failed to load content', autoplayInterval: 5000, tabsAlignment: 'align_top', tabsToSlide: 1, tabsAnimSpeed: 300, buttonsFunction: 'slide', tabsEasing: '', contentAnimSpeed: 500, contentAnim: 'slideH', autoHeight: false, autoHeightSpeed: 300, textConversion: 'pb', contentEasing: 'easeInOutQuart', autoplay: false, orientation: 'horizontal' });});</script>
+    <script type='text/javascript' src='<?php echo $adres; ?>Store/cms_admin/js/slidetabs/jquery.slidetabs.pack.js'></script>
+    
+ <?php
+
+echo '<div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align_top">
+
+            <div class="st_tabs">
+                  <a href="#" class="st_prev">prev</a>
+                  <a href="#" class="st_next">next</a>
+                  
+                  <div class="st_tabs_wrap">
+                      <ul class="st_tabs_ul">             
+                          <li>
+                              <a href="#reklamy" rel="reklamy" class="st_tab st_tab_2">Kafelki - edycja grupy</a>
+                          </li>
+
+                      </ul>
+                  </div>
+              </div>';?>
+              
+              <div class="st_views">
+
+                     <div class="reklamy st_view" style="overflow-y: auto;">
+                              <div class="st_view_inner">
+                                 <div id="tab">
+                                             
+                                      <?php
+                                        echo '<div style="position: absolute; z-index: 99999999;">';
+                                          echo '<button onclick="window.location = \'admin.php?dodajPole='.$idGrupy.'\'" style="margin-left: 10px; margin-right: 10px; float: right;">Dodaj nowe pole</button>';
+                                        echo '</div>';
+                                      ?>
+                                      
+                                    <form action="admin.php?edytujGrupe=<?php echo $idGrupy; ?>"  method="post" accept-charset="utf-8" style="position: relative; width: 98%; margin: 0 auto; margin-bottom: 20px;">
+                                          
+                                      <div class="submit" style="float:right;"><input name="skasujPozycje" type="submit" value="Skasuj zaznaczone" style="color: red;"></div>
+                                      
+                                      <div class="submit" style="float:right; margin-bottom: 10px;"><input name='aktualizujPozycje' style='margin-right: 10px;' type='submit' value='Aktualizuj' /></div>
+                                      
+                                      <hr style="clear: both;">
+                                      <br>
+                                      
+                                      <div class="holder"></div>
+                                      
+                                      
+                                      <table style="width: 100%; clear:both; text-align: center; margin: 0 auto;>
+                                
+                                      <tbody id="itemContainer">
+                                
+                                      <?php
+                                        $tmp = 0;
+                                        if(sizeof($pozycje))
+                                        foreach ($pozycje as $z) {
+                                          
+                                          if ($tmp == 0) {
+                                			echo"<tr class='firstRow'>"; 
+                                			$tmp = 1;         	
+                                          } else {
+                                          	echo"<tr class='secRow'>";
+                                          	$tmp = 0;
+                                          }
+                                          
+                                          echo "<td style='width: 10%;'><input type='checkbox' name='zaznacz[]' value='".$z[id]."'>
+                                          	<input name='id[]' type='hidden' value='$z[id]' />
+                                          </td>
+                                          <td style='position: relative; width: 80%;'><textarea class='$z[id]' name='tresc[]' style='width: 99%; height: 98%; padding: 0px; position: absolute; margin-left: auto; margin-right: auto; left: 0px; right: 0px; display: none; z-index: 9999;'>$z[tresc]</textarea>$z[tresc]</td>			
+                                          <td  style='width: 10%;' align='center' valign='middle'> <button type='button' onclick='add(".$z[id].");' style='display: block; margin: 0 auto; width: 90%; background: #ffffff;'>Wybierz</button><br><br><button type='button' onclick='$(\".$z[id]\").toggle();' style='display: block; margin: 0 auto; width: 90%;'>Pokaż HTML</button> </td>			
+                                          </tr>";
+                                        }
+                                      ?>
+                                      
+                                      </tbody>
+                                      </table>
+                                    </form>
+                                    
+                                    <div id="generujMenu" class="hiddenRight" style="display:none;">
+                                   		<a href="javascript:void(0)" onclick="eraseCookie();">Wyczyść</a><br>
+                                   		<a href="javascript:void(0)" onclick="podglad();">Podgląd</a><br>
+                                   	    <a href="admin.php?generuj">HTML</a><br>
+                                   	</div>
+                                    	
+                                    <div id="podglad" style="display: none;">
+                                    	<div id="podgladBody"></div>	
+                                    </div>
+        
+                        </div>
+                    </div>
+                 </div>
+            </div>
+       </div>
+<script>
+
+/* --- CHOWANIE BOCZNYCH WIDGETÓW --- */	
+	$("#generujMenu").hover(function(){
+	    $('#generujMenu').removeClass('hiddenRight');
+	},function(){
+	    $('#generujMenu').addClass('hiddenRight');
+	});
+/* KONIEC --- CHOWANIE BOCZNYCH WIDGETÓW --- */
+
+function podglad() {
+	if ($( "#podglad" ).hasClass( "show" )) {	
+	    $("#podglad").hide();
+	    $("#podglad").removeClass('show');
+	} else {
+		$("#podglad").show();
+		$("#podglad").addClass('show');
+	}
+}
+
+function getCookie(cname) {
+    var name = cname + "=";
+    var ca = document.cookie.split(';');
+    for(var i = 0; i < ca.length; i++) {
+        var c = ca[i];
+        while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+        }
+        if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+        }
+    }
+    return "";
+}
+
+function add(id) {
+    var tmp = getCookie('uzyj');
+    if (tmp == '') {
+    	document.cookie = "uzyj="+id;
+    } else {
+    	document.cookie = "uzyj="+tmp+"|"+id;
+    }
+    
+    $("#generujMenu").show();
+    
+    ajax();
+}
+
+function ajax() {
+    $.ajax({
+    	method : "POST",
+    	url: 'admin.php?ajax',
+    	data : "data",
+    	success: function(result) {
+    		$("#podgladBody").html(result)
+    	}
+    });
+}
+
+function eraseCookie() {
+	document.cookie = "uzyj=";
+	$("#generujMenu").hide();
+    $("#podglad").hide();
+    $("#podglad").removeClass('show');	
+}
+
+$( document ).ready(function() {
+    var tmp = getCookie('uzyj');
+    if (tmp == '') {
+    	$("#generujMenu").hide();
+    } else {
+    	$("#generujMenu").show();
+    	ajax();
+    }
+});
+</script>

@@ -1,0 +1,70 @@
+  <?php
+    /* INTERPRETOWANIE DANYCH OD KONTOLERA */
+    $szablony = $_SESSION['szablony'];
+  /* ######################################################### */
+  ?>
+
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Store/cms_admin/css/slidetabs/template.css' />
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Components/reklama-allegro/Store/css/style_reklama.css' />
+
+    <script type="text/javascript">jQuery(document).ready(function() {jQuery("#slidetabs_45").slidetabs({ totalWidth: 'auto', tabActive: 1, useWebKit: true, tabsScroll: true, touchSupport: true, ajaxCache: true, ajaxSpinner: true, ajaxError: 'Failed to load content', autoplayInterval: 5000, tabsAlignment: 'align_top', tabsToSlide: 1, tabsAnimSpeed: 300, buttonsFunction: 'slide', tabsEasing: '', contentAnimSpeed: 500, contentAnim: 'slideH', autoHeight: false, autoHeightSpeed: 300, textConversion: 'pb', contentEasing: 'easeInOutQuart', autoplay: false, orientation: 'horizontal' });});</script>
+    <script type='text/javascript' src='<?php echo $adres; ?>Store/cms_admin/js/slidetabs/jquery.slidetabs.pack.js'></script>
+    
+ <?php
+
+echo '        <div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align_top">
+
+            <div class="st_tabs">
+                  <a href="#" class="st_prev">prev</a>
+                  <a href="#" class="st_next">next</a>
+                  
+                  <div class="st_tabs_wrap">
+                      <ul class="st_tabs_ul">             
+                          <li>
+                              <a href="#reklamy" rel="reklamy" class="st_tab st_tab_2">Obszary dla szablonów</a>
+                          </li>
+
+                      </ul>
+                  </div>
+              </div>';?>
+              
+              <div class="st_views">
+
+                             <div class="reklamy st_view" style="overflow-y: auto;">
+                                              <div class="st_view_inner">
+                                                 <div id="tab">
+
+														  <div class="holder"></div>
+                                                      
+														  <table style="width: auto; clear:both; text-align: center; margin: 0 auto;">
+	                                                      <tbody id="itemContainer">
+	                                                      
+	                                                        <tr>
+	                                                          <th>Nazwa szablonu</th>      
+	                                                          <th>Edycja</th>
+	                                                        </tr>
+	                                                      <?php
+	                                                        if(sizeof($szablony))
+	                                                        foreach ($szablony as $z) {
+	                                                          
+	                                                          echo"<tr>";
+	                                                          echo "
+	                                                          <td>$z[nazwaSzablonu]</td>			
+	                                                          <td align='center' valign='middle'> <a class='delete' href='admin.php?edytujObszary=$z[id]'><img src='../../Store/cms_admin/img/edit.png'></a> </td>
+	
+	                                                          </tr>";
+	                                                        }
+	                                                      ?>
+	                                                      
+	                                                      </tbody>
+	                                                      </table>
+                                                      </form>
+        
+                                                 </div>
+                                              </div>
+                                            </div>
+
+                                  
+    <?php                  
+        echo '</div>'; 
+              ?>

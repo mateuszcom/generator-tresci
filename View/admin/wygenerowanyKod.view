@@ -1,0 +1,7 @@
+  <?php
+    /* INTERPRETOWANIE DANYCH OD KONTOLERA */
+    $wygenerowanyKod = $_SESSION['wygenerowanyKod'];
+  /* ######################################################### */
+  ?>
+  
+  <textarea style="width: 90%; height: 500px; margin: 0 auto; display: block; margin-top: 30px; margin-bottom: 30px;"><?php echo $wygenerowanyKod; ?></textarea>
