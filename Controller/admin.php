@@ -488,7 +488,23 @@ class Admin {
   			$plik_tmp = $_FILES['plik']['tmp_name'];
   		}
   
-  		$sciezka = $_SERVER['DOCUMENT_ROOT'].'/'.$sciezkaFiles.'/Files/'.$plik_nazwa;
+  		
+  		if ( ($idRoot == '') OR ($idRoot == null) OR ($idRoot == 0) OR ($idRoot == '0') ) {
+  			$sciezka = $_SERVER['DOCUMENT_ROOT'].'/'.$sciezkaFiles.'/Files/'.$plik_nazwa;
+  		} else {
+  			$tmpIdRoot = $idRoot;
+  			$path = '';
+  		
+  			while ($tmpIdRoot > 0) {
+  				$dir = $this->AdminModel->pobierzDanePomFtp($tmpIdRoot);
+  		
+  				$tmpIdRoot = $dir['idRoot'];
+  		
+  				$path = $dir['nazwa'].'/'.$path;
+  			}
+  				
+  			$sciezka = $_SERVER['DOCUMENT_ROOT'].'/'.$sciezkaFiles.'/Files/'.$path.$plik_nazwa;
+  		}
   
   		if(is_uploaded_file($plik_tmp)) {
   			move_uploaded_file($plik_tmp, $sciezka);

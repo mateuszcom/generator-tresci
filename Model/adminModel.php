@@ -546,6 +546,32 @@ class AdminModel {
 	}
 	
 	
+	public function pobierzDanePomFtp($idRoot = null)
+	{
+		$config = new Config;
+		$info = new Information;
+
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+		
+		if ( ($idRoot == '') OR ($idRoot == null) ) {
+			$idRoot = 0;
+		}
+	
+		$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$idRoot;";
+		$wynik=mysql_query($sql) or die(mysql_error());
+	
+		$wynik=mysql_query($sql) or die(mysql_error());
+		while ($linia=mysql_fetch_array($wynik)) {
+			$tab['idRoot']=$linia['idRoot'];
+			$tab['nazwa']=$linia['nazwa'];
+		}
+	
+		return $tab;
+	}
+	
+	
 	public function utworzKatalog($nazwa = null, $idRoot = null)
 	{
 		$config = new Config;
@@ -562,9 +588,8 @@ class AdminModel {
 			$path = '';
 			
 			while ($tmpIdRoot > 0) {
-				$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$tmpIdRoot;";
-				$wynik=mysql_query($sql) or die(mysql_error());
-				$dir = mysql_fetch_array($wynik);
+				$dir = $this->pobierzDanePomFtp($tmpIdRoot);
+
 				$tmpIdRoot = $dir['idRoot'];
 				
 				$path = $dir['nazwa'].'/'.$path;
@@ -601,7 +626,7 @@ class AdminModel {
 	
 	
 	public function delete_folder($folder) {
-	    $glob = glob($folder);
+		$glob = glob($folder);
 	    foreach ($glob as $g) {
 	        if (!is_dir($g)) {
 	            unlink($g);
@@ -638,16 +663,14 @@ class AdminModel {
 			$path = '';
 				
 			while ($tmpIdRoot > 0) {
-				$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$tmpIdRoot;";
-				$wynik=mysql_query($sql) or die(mysql_error());
-				$dir = mysql_fetch_array($wynik);
+				$dir = $this->pobierzDanePomFtp($tmpIdRoot);
+
 				$tmpIdRoot = $dir['idRoot'];
 		
 				$path = $dir['nazwa'].'/'.$path;
 			}
 			
-			die('dd '.$path);
-			$this->delete_folder("../../../../Files/".$path."/".$odp['nazwa']);
+			$this->delete_folder("../../../../Files/".$path.$odp['nazwa']);
 		}
 		
 		$sql = "DELETE FROM komponent_generator_tresci_ftp WHERE idRoot =$id";
