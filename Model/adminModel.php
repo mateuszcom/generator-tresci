@@ -572,6 +572,28 @@ class AdminModel {
 	}
 	
 	
+	public function pobierzPrevRoot($id = null)
+	{
+		$config = new Config;
+		$info = new Information;
+			
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		$sql = "SELECT idRoot, nazwa FROM komponent_generator_tresci_ftp WHERE `id`=$id;";
+	
+		$wynik=mysql_query($sql) or die(mysql_error());
+		while ($linia=mysql_fetch_array($wynik)) {
+			$tab['idRoot']=$linia['idRoot'];
+			$tab['nazwa']=$linia['nazwa'];
+		}
+	
+		mysql_close($polaczenie);
+		return $tab;
+	}
+	
+	
 	public function utworzKatalog($nazwa = null, $idRoot = null)
 	{
 		$config = new Config;
@@ -606,7 +628,7 @@ class AdminModel {
 	}
 	
 	
-	public function aktualizujFtp($id = null, $nazwa = null)
+	public function aktualizujFtp($id = null, $nazwa = null, $oldNazwa = null, $idRoot = null)
 	{
 		$config = new Config;
 		$info = new Information;
@@ -615,12 +637,27 @@ class AdminModel {
 		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
 		mysql_query ("SET NAMES utf8");
 	
-		$i=0;
-		foreach ($id as $ids) {
-			$sql = "UPDATE komponent_generator_tresci_ftp SET `nazwa` = '$nazwa[$i]' WHERE `id` = '$ids'";
-			$wynik=mysql_query($sql) or die(mysql_error());
-			$i++;
+		
+		if ( ($idRoot == '') OR ($idRoot == null) ) {
+			rename("../../../../Files/".$oldNazwa, "../../../../Files/".$nazwa);
+		} else {
+			$tmpIdRoot = $idRoot;
+			$path = '';
+				
+			while ($tmpIdRoot > 0) {
+				$dir = $this->pobierzDanePomFtp($tmpIdRoot);
+		
+				$tmpIdRoot = $dir['idRoot'];
+		
+				$path = $dir['nazwa'].'/'.$path;
+			}
+				
+			rename("../../../../Files/".$path.$oldNazwa, "../../../../Files/".$path.$nazwa);
 		}
+		
+		$sql = "UPDATE komponent_generator_tresci_ftp SET `nazwa` = '$nazwa' WHERE `id` = '$id'";
+		$wynik=mysql_query($sql) or die(mysql_error());
+		
 		mysql_close($polaczenie);
 	}
 	

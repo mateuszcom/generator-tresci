@@ -434,9 +434,14 @@ class Admin {
   
   private function klientFtp($idRoot = null) {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
+  		if ($idRoot == null) {
+  			$idRoot = 0;
+  		}
+  		
   		$this->set('dane', $this->AdminModel->pobierzDaneFtp($idRoot));
   		$this->set('idRoot', $idRoot);
-  		
+  		$this->set('PrevRoot', $this->AdminModel->pobierzPrevRoot($idRoot));
+
   		if ( ($idRoot == '') OR ($idRoot == null) ) {
   			$idRoot = 0;
   		}
@@ -461,7 +466,7 @@ class Admin {
   			}
   			
   			if (isset($_POST['aktualizuj'])) {
-  				$this->AdminModel->aktualizujFtp($_POST['id'], $_POST['nazwa']);
+  				$this->AdminModel->aktualizujFtp($_POST['idPoz'], $_POST['nazwaRename'], $_POST['oldNazwa'], $idRoot);
   			}
   			
   			echo "<script>window.location = 'admin.php?klientFtp'</script>";

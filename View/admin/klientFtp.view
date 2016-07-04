@@ -4,7 +4,8 @@
     /* INTERPRETOWANIE DANYCH OD KONTOLERA */
     $dane = $_SESSION['dane'];
 	$idRoot = $_SESSION['idRoot'];
-	
+	$PrevRoot = $_SESSION['PrevRoot'];
+
 	if ( ($idRoot == '') OR ($idRoot == null) ) {
 		$idRoot = 0;	
 	}	
@@ -50,20 +51,20 @@
 		}
 		
 		#podgladBodyFile { 
-		    position: fixed;
-		    top: 50px;
-		    background: white;
-		    height: 50px;
-		    border: 10px solid black;
-		    transition-duration: 1s;
-		    z-index: 99999999999;
-		    width: 50%;
-		    margin-left: auto;
-		    margin-right: auto;
-		    left: 0;
-		    right: 0;
-		    display: block;
-		    border-radius: 10px;
+            position: fixed;
+            top: 50px;
+            background: white;
+            height: 100px;
+            border: 10px solid black;
+            transition-duration: 1s;
+            z-index: 99999999999;
+            width: 50%;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            display: block;
+            border-radius: 10px;
 		}
 		
 		#podgladZmianaNazwy {
@@ -99,29 +100,50 @@
   <br>
       
  <?php
+      if ( $idRoot != 0) {
+        echo "<span style='position: absolute; margin-left: 10px; margin-top: 20px;'>Jesteś w katalogu: <b>".$PrevRoot['nazwa'].'</b></span>';
+      }
+      
       echo '<form action="admin.php?klientFtp" method="post" accept-charset="utf-8">
 
-      <table border="1" cellpadding="0" cellspacing="0" style="font-size: 10px; text-align:center; margin: 0 auto; margin-top: 10px; width: 99%; clear: both;">
+      <table border="1" cellpadding="0" cellspacing="0" style="font-size: 10px; margin: 0 auto; margin-top: 10px; width: 99%; clear: both;">
       <tbody>
           <tr style="background-color: black; color: white;">
-              <th style="width:60px;">Zaznacz</th>                  
-              <th style="width:60px;">Nazwa</th>
-              <th style="width:10px;">Akcja</th>                                  
+              <th style="width:10%;">Zaznacz</th>                  
+              <th style="width:80%;">Nazwa</th>
+              <th style="width:10%;">Akcja</th>                                  
           </tr> 
           </tbody>
           <tbody id="itemContainer">';
 
+          if ( $idRoot != 0) {
+              echo '<tr>';                                         
+                  echo '<td> </td>';
+                  echo '<td style="padding-left: 10px;"><img src="Store/img/directory.png" style="vertical-align: middle; margin-right: 10px;"/><a href="admin.php?klientFtp='.$PrevRoot['idRoot'].'">...</a> </td>';
+                  echo '<td></td>';                                                                                            
+              echo '</tr>';
+          }
+                  
           if ( ($dane != null) AND ($dane != 0) ) {
 
               foreach ($dane as &$value) {
                   $id = $value['id'];
                   $nazwa = $value['nazwa'];
+                  $typ = $value['typ'];
 
+                  if ($typ == 'dir') {
+                    $icon = '<img src="Store/img/directory.png" style="vertical-align: middle; margin-right: 10px;"/>';
+                  }
+                  
+                  if ($typ == 'file') {
+                    $icon = '<img src="Store/img/file.png" style="vertical-align: middle; margin-right: 10px;"/>';                      
+                  }
+                                    
                   echo '<tr>';
                       echo '<input type="hidden" size="100" name="id[]" value="'.$id.'">';                                         
-                      echo '<td> <input type="checkbox" name="zaznacz[]" value="'.$id.'"> </td>';
-                      echo '<td> <input type="text" style="margin-bottom:10px; width:98%; margin-top: 10px;" size="100" name="nazwa[]" value="'.$nazwa.'"> </td>';
-                      echo '<td><a href="admin.php?klientFtp='.$id.'"><img src="../../Store/cms_admin/img/edit.png"></img></a><a href="#" class="przycisk" onclick="podgladZmianaNazwy();">Zmiana nazwy</a></td>';                                                                                            
+                      echo '<td style="text-align: center;">  <input type="checkbox" name="zaznacz[]" value="'.$id.'"> </td>';
+                      echo '<td style="padding-left: 10px;">'.$icon.'<a href="admin.php?klientFtp='.$id.'">'.$nazwa.'</a> </td>';
+                      echo '<td><a href="#" class="przycisk" onclick="podgladZmianaNazwy('.$id.',\''.$nazwa.'\');">Zmiana nazwy</a></td>';                                                                                            
                   echo '</tr>';
               }
 
@@ -130,7 +152,6 @@
           echo '<div class="submit" style="float:right;"><input type="submit" class="przycisk_red" name="skasuj" value="Skasuj zaznaczone" style="color: red;"></div>
           <div class="submit" style="float:right;"><a href="#" class="przycisk" onclick="podglad();">Dodaj katalog</a></div>
           <div class="submit" style="float:right;"><a href="#" class="przycisk" onclick="podgladFile();">Prześlij pliki</a></div>              
-          <div class="submit" style="float:right;"><input type="submit" class="przycisk" name="aktualizuj" value="Aktualizuj"></div>
           </form>
       </tbody>
       </table>';
@@ -140,6 +161,7 @@
 <div id="podgladDir" style="display: none;">
 	<div id="podgladBodyDir">
 		<form action="admin.php?klientFtp=<?php echo $idRoot; ?>" method="post" accept-charset="utf-8">
+			<h3 style="position: absolute; margin-left: 10px; margin-top: 10px;">Tworzenie katalogu</h3>
 			<a href="#" onclick="podglad();" style="float: right; margin-top: 10px; margin-right: 10px;">Zamknij</a><br>
 			<input type="text" name="nazwaDir" style="width: 70%; margin-top: 40px; margin-left: 10px;" placeholder="Podaj nazwę katalogu...">
 			<div class="submit" style="float: right; margin-top: 40px;"><input type="submit" name="dodaj_katalog" class="przycisk" value="Dodaj katalog" style="margin: 0px;"></div>
@@ -150,9 +172,10 @@
 <div id="podgladFile" style="display: none;">
 	<div id="podgladBodyFile">
 		<form enctype="multipart/form-data" action="admin.php?uploadFile=<?php echo $idRoot; ?>" method="post" accept-charset="utf-8">
+			<h3 style="position: absolute; margin-left: 10px; margin-top: 10px;">Wgraj pliki</h3>
 			<a href="#" onclick="podgladFile();" style="float: right; margin-top: 10px; margin-right: 10px;">Zamknij</a><br>
-                    <input id="plik" multiple="true" style="margin: 0px; margin-left: 10px; margin-right: 10px;background-color: #BDBDBD; float: left;" name="plik[]" type="file" />
-			<div class="submit" style="float: left;"><input type="submit" class="przycisk" value="Wyślij" style="margin: 0px;"></div>
+                    <input id="plik" multiple="true" style="margin: 0px; margin-left: 10px; margin-right: 10px; margin-top: 40px; background-color: #BDBDBD; float: left;" name="plik[]" type="file" />
+			<div class="submit" style="float: left;"><input type="submit" class="przycisk" value="Wyślij" style="margin: 0px; margin-top: 40px;"></div>
 		</form>
 	</div>	
 </div>
@@ -160,9 +183,12 @@
 <div id="podgladZmianaNazwy" style="display: none;">
 	<div id="podgladBodyZmianaNazwy">
 		<form action="admin.php?klientFtp=<?php echo $idRoot; ?>" method="post" accept-charset="utf-8">
+			<h3 style="position: absolute; margin-left: 10px; margin-top: 10px;">Zmiana nazwy</h3>
 			<a href="#" onclick="podgladZmianaNazwy();" style="float: right; margin-top: 10px; margin-right: 10px;">Zamknij</a><br>
-			<input type="text" name="nazwaDir" style="width: 70%; margin-top: 40px; margin-left: 10px;" placeholder="Podaj nazwę katalogu...">
-			<div class="submit" style="float: right; margin-top: 40px;"><input type="submit" name="dodaj_katalog" class="przycisk" value="Dodaj katalog" style="margin: 0px;"></div>
+			<input type="text" name="nazwaRename" id="nazwaRename" style="width: 70%; margin-top: 40px; margin-left: 10px;" placeholder="Podaj nazwę katalogu...">
+			<input type="hidden" size="100" name="idPoz" id="idPoz" value="">
+			<input type="hidden" size="100" name="oldNazwa" id="oldNazwa" value="">
+			<div class="submit" style="float: right; margin-top: 40px;"><input type="submit" name="aktualizuj" class="przycisk" value="Zmień nazwę" style="margin: 0px;"></div>
 		</form>
 	</div>	
 </div>
@@ -189,13 +215,16 @@ function podgladFile() {
 	}
 }
 
-function podgladZmianaNazwy() {
+function podgladZmianaNazwy(id, nazwa) {
 	if ($( "#podgladZmianaNazwy" ).hasClass( "show" )) {	
 	    $("#podgladZmianaNazwy").hide();
 	    $("#podgladZmianaNazwy").removeClass('show');
 	} else {
 		$("#podgladZmianaNazwy").show();
 		$("#podgladZmianaNazwy").addClass('show');
+		$("#nazwaRename").val(nazwa);
+		$("#oldNazwa").val(nazwa);
+		$("#idPoz").val(id);
 	}
 }
 </script>
