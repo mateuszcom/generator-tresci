@@ -438,10 +438,33 @@ class Admin {
   			$idRoot = 0;
   		}
   		
+  		$this->set('sciezkaFiles', $this->AdminModel->sciezkaFilesFtp());
   		$this->set('dane', $this->AdminModel->pobierzDaneFtp($idRoot));
   		$this->set('idRoot', $idRoot);
   		$this->set('PrevRoot', $this->AdminModel->pobierzPrevRoot($idRoot));
 
+  		
+  		if ( ($idRoot == '') OR ($idRoot == null) OR ($idRoot == 0) ) {
+  			$path = "../../../../Files/";
+  			$pathTmp = $path;
+  		} else {
+  			$tmpIdRoot = $idRoot;
+  			$path = '';
+  				
+  			while ($tmpIdRoot > 0) {
+  				$dir = $this->AdminModel->pobierzDanePomFtp($tmpIdRoot);
+  		
+  				$tmpIdRoot = $dir['idRoot'];
+  		
+  				$path = $dir['nazwa'].'/'.$path;
+  			}
+  			
+  			$pathTmp = "../../../../Files/".$path;
+  		}
+  		
+  		
+  		$this->set('pathTmp', $pathTmp);
+  			
   		if ( ($idRoot == '') OR ($idRoot == null) ) {
   			$idRoot = 0;
   		}
@@ -468,8 +491,7 @@ class Admin {
   			if (isset($_POST['aktualizuj'])) {
   				$this->AdminModel->aktualizujFtp($_POST['idPoz'], $_POST['nazwaRename'], $_POST['oldNazwa'], $idRoot);
   			}
-  			
-  			echo "<script>window.location = 'admin.php?klientFtp'</script>";
+  			echo "<script>window.location = 'admin.php?klientFtp=".$idRoot."'</script>";
   		}  		
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";

@@ -526,11 +526,10 @@ class AdminModel {
 		mysql_query ("SET NAMES utf8");
 	
 		if ( ($idRoot == '') OR ($idRoot == null) ) {
-			$idRoot = 0;	
+			$idRoot = 0;
 		}
-		
-		$sql = "SELECT * FROM komponent_generator_tresci_ftp WHERE `idRoot`=$idRoot ORDER BY nazwa ASC;";
 	
+		$sql = "SELECT * FROM komponent_generator_tresci_ftp WHERE `idRoot`=$idRoot AND `typ`='dir' ORDER BY nazwa ASC;";
 		$wynik=mysql_query($sql) or die(mysql_error());
 		$i=0;
 		while ($linia=mysql_fetch_array($wynik)) {
@@ -541,10 +540,19 @@ class AdminModel {
 			$i++;
 		}
 	
+		$sql = "SELECT * FROM komponent_generator_tresci_ftp WHERE `idRoot`=$idRoot AND `typ`='file' ORDER BY nazwa ASC;";
+		$wynik=mysql_query($sql) or die(mysql_error());
+		while ($linia=mysql_fetch_array($wynik)) {
+			$tab[$i]['id']=$linia['id'];
+			$tab[$i]['idRoot']=$linia['idRoot'];
+			$tab[$i]['nazwa']=$linia['nazwa'];
+			$tab[$i]['typ']=$linia['typ'];
+			$i++;
+		}
+		
 		mysql_close($polaczenie);
 		return $tab;
 	}
-	
 	
 	public function pobierzDanePomFtp($idRoot = null)
 	{

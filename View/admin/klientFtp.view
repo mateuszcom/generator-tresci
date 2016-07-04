@@ -5,7 +5,9 @@
     $dane = $_SESSION['dane'];
 	$idRoot = $_SESSION['idRoot'];
 	$PrevRoot = $_SESSION['PrevRoot'];
-
+	$pathTmp = $_SESSION['pathTmp'];
+    $sciezkaFiles = $_SESSION['sciezkaFiles'];
+    
 	if ( ($idRoot == '') OR ($idRoot == null) ) {
 		$idRoot = 0;	
 	}	
@@ -13,7 +15,7 @@
   ?>
   
 	<style>
-		#podgladDir {
+		#podgladDir, #podgladFile, #podgladZmianaNazwy {
 		    width: 100%;
 		    height: 100%;
 		    background-color: rgba(0, 0, 0, 0.65);
@@ -23,61 +25,7 @@
 		    z-index: 99999999;
 		}
 		
-		#podgladBodyDir { 
-		    position: fixed;
-		    top: 50px;
-		    background: white;
-		    height: 100px;
-		    border: 10px solid black;
-		    transition-duration: 1s;
-		    z-index: 99999999999;
-		    width: 50%;
-		    margin-left: auto;
-		    margin-right: auto;
-		    left: 0;
-		    right: 0;
-		    display: block;
-		    border-radius: 10px;
-		}
-		
-		#podgladFile {
-		    width: 100%;
-		    height: 100%;
-		    background-color: rgba(0, 0, 0, 0.65);
-		    top: 0px;
-		    left: 0px;
-		    position: fixed;
-		    z-index: 99999999;
-		}
-		
-		#podgladBodyFile { 
-            position: fixed;
-            top: 50px;
-            background: white;
-            height: 100px;
-            border: 10px solid black;
-            transition-duration: 1s;
-            z-index: 99999999999;
-            width: 50%;
-            margin-left: auto;
-            margin-right: auto;
-            left: 0;
-            right: 0;
-            display: block;
-            border-radius: 10px;
-		}
-		
-		#podgladZmianaNazwy {
-		    width: 100%;
-		    height: 100%;
-		    background-color: rgba(0, 0, 0, 0.65);
-		    top: 0px;
-		    left: 0px;
-		    position: fixed;
-		    z-index: 99999999;
-		}
-		
-		#podgladBodyZmianaNazwy { 
+		#podgladBodyDir, #podgladBodyFile, #podgladBodyZmianaNazwy { 
 		    position: fixed;
 		    top: 50px;
 		    background: white;
@@ -104,7 +52,7 @@
         echo "<span style='position: absolute; margin-left: 10px; margin-top: 20px;'>Jesteś w katalogu: <b>".$PrevRoot['nazwa'].'</b></span>';
       }
       
-      echo '<form action="admin.php?klientFtp" method="post" accept-charset="utf-8">
+      echo '<form action="admin.php?klientFtp='.$idRoot.'" method="post" accept-charset="utf-8">
 
       <table border="1" cellpadding="0" cellspacing="0" style="font-size: 10px; margin: 0 auto; margin-top: 10px; width: 99%; clear: both;">
       <tbody>
@@ -142,8 +90,13 @@
                   echo '<tr>';
                       echo '<input type="hidden" size="100" name="id[]" value="'.$id.'">';                                         
                       echo '<td style="text-align: center;">  <input type="checkbox" name="zaznacz[]" value="'.$id.'"> </td>';
-                      echo '<td style="padding-left: 10px;">'.$icon.'<a href="admin.php?klientFtp='.$id.'">'.$nazwa.'</a> </td>';
-                      echo '<td><a href="#" class="przycisk" onclick="podgladZmianaNazwy('.$id.',\''.$nazwa.'\');">Zmiana nazwy</a></td>';                                                                                            
+                      if ( $typ == 'dir') {
+                        echo '<td style="padding-left: 10px;">'.$icon.'<a href="admin.php?klientFtp='.$id.'">'.$nazwa.'</a> </td>';
+                        echo '<td><a href="#" class="przycisk" onclick="podgladZmianaNazwy('.$id.',\''.$nazwa.'\');">Zmiana nazwy</a></td>';                        
+                      } else {
+                        echo '<td style="padding-left: 10px;">'.$icon.'<a href="'.$pathTmp.$nazwa.'" target="_blank">'.$nazwa.'</a> </td>';
+                        echo '<td><a href="#" class="przycisk" onclick="podgladZmianaNazwy('.$id.',\''.$nazwa.'\');">Zmiana nazwy</a> </td>';
+                      }                                                                                            
                   echo '</tr>';
               }
 
