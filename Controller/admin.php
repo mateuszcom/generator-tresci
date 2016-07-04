@@ -71,12 +71,14 @@ class Admin {
         $this->edytujSzablony($_GET['edytujSzablony']);
     } elseif (isset($_GET['klientFtp'])) {
         $this->klientFtp($_GET['klientFtp']);
+    } elseif (isset($_GET['uploadFile'])) {
+        $this->uploadFile($_GET['uploadFile']);
     } else {
 		    $this->uruchomKomponent();
 		}			
 	}
  
- 
+	
 	private function uruchomModel()
 	{
 		$this->AdminModel = new AdminModel;
@@ -433,9 +435,11 @@ class Admin {
   private function klientFtp($idRoot = null) {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
   		$this->set('dane', $this->AdminModel->pobierzDaneFtp($idRoot));
+  		$this->set('idRoot', $idRoot);
   		
-  		/* 1. Dodaj katalog - pojawiające się okienko z podaniem nazwy oraz przyciskiem */
-  		/* 2. Wgraj plik - pojawiające się okienko z możliwością wgrania wielu plików */
+  		if ( ($idRoot == '') OR ($idRoot == null) ) {
+  			$idRoot = 0;
+  		}
   		
   		$this->LayPanel = new LayoutPanelAdmin();
   		$this->set('adres', '../../');
@@ -445,23 +449,60 @@ class Admin {
   		if($_SERVER['REQUEST_METHOD'] == "POST"){
   		
   			if (isset($_POST['skasuj'])) {
-				echo "<script>alert('skasuj');</script>";
+  				$zaznaczone = $_POST['zaznacz'];
+  				 
+  				foreach($zaznaczone as $value) {
+  					$this->AdminModel->skasujFtp($value);
+  				}
   			}
   			 
   			if (isset($_POST['dodaj_katalog'])) {
-  				echo "<script>alert('dodaj katalog');</script>";  				
-  			}
-
-  			if (isset($_POST['dodaj_plik'])) {
-  				echo "<script>alert('dodaj plik');</script>";
+  				$this->AdminModel->utworzKatalog($_POST['nazwaDir'], $idRoot);
   			}
   			
   			if (isset($_POST['aktualizuj'])) {
-  				echo "<script>alert('aktualizuj');</script>";
+  				$this->AdminModel->aktualizujFtp($_POST['id'], $_POST['nazwa']);
   			}
   			
   			echo "<script>window.location = 'admin.php?klientFtp'</script>";
   		}  		
+  	} else {
+  		echo "<script>window.location = '../../admin.php'</script>";
+  	}
+  }
+  
+  
+  private function uploadFile($idRoot=null, $fi=null) {
+  	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
+  		$config = new Config;
+  		$sciezkaFiles = $this->AdminModel->sciezkaFilesFtp();
+  
+  		if (is_array($_FILES['plik']['name'])) {
+  			if ($fi == null) $fi=0;
+  			$fc = count($_FILES['plik']['name']);
+  			$plik_nazwa = $_FILES['plik']['name'][$fi];
+  			$plik_tmp = $_FILES['plik']['tmp_name'][$fi];
+  			$fi++;
+  		} else {
+  			$plik_nazwa = $_FILES['plik']['name'];
+  			$plik_tmp = $_FILES['plik']['tmp_name'];
+  		}
+  
+  		$sciezka = $_SERVER['DOCUMENT_ROOT'].'/'.$sciezkaFiles.'/Files/'.$plik_nazwa;
+  
+  		if(is_uploaded_file($plik_tmp)) {
+  			move_uploaded_file($plik_tmp, $sciezka);
+  		}
+  
+  		$this->AdminModel->dodajPlikDoFtp($plik_nazwa, $idRoot);
+  
+  
+  		if ($fi<$fc){
+  			$this->uploadFile($idRoot, $fi);
+  		} else {
+  			echo "<script>window.location = '".$config->files."/Components/generator-tresci/admin.php?klientFtp=$idRoot'</script>";
+  		}
+  
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";
   	}

@@ -23,6 +23,14 @@ class AdminModel {
       return $config->files;
 	}		
 	
+	
+	public function sciezkaFilesFtp()
+	{
+		$config = new Config;
+		 
+		return $config->filesFtp;
+	}
+	
 
 	public function sciezkaFilesServer()
 	{
@@ -537,7 +545,7 @@ class AdminModel {
 		return $tab;
 	}
 	
-	/*dodokończenia*/
+	
 	public function utworzKatalog($nazwa = null, $idRoot = null)
 	{
 		$config = new Config;
@@ -546,16 +554,123 @@ class AdminModel {
 		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
 		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
 		mysql_query ("SET NAMES utf8");
-	
-		$sql = "INSERT INTO komponent_generator_tresci_ftp (`id`, `idRoot`, `nazwa`, `typ`) VALUES ('', $idRoot, '$nazwa', 'dir');";
-	
-		mkdir("../../../../Files/".$nazwa, 0755);
+
+		if ( ($idRoot == '') OR ($idRoot == null) ) {
+			mkdir("../../../../Files/".$nazwa, 0755);
+		} else {
+			$tmpIdRoot = $idRoot;
+			$path = '';
+			
+			while ($tmpIdRoot > 0) {
+				$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$tmpIdRoot;";
+				$wynik=mysql_query($sql) or die(mysql_error());
+				$dir = mysql_fetch_array($wynik);
+				$tmpIdRoot = $dir['idRoot'];
+				
+				$path = $dir['nazwa'].'/'.$path;
+			}
+			
+			mkdir("../../../../Files/".$path.'/'.$nazwa, 0755);
+		}
 		
+		$sql = "INSERT INTO komponent_generator_tresci_ftp (`id`, `idRoot`, `nazwa`, `typ`) VALUES ('', $idRoot, '$nazwa', 'dir');";		
 		$wynik=mysql_query($sql) or die(mysql_error());
 	
 		mysql_close($polaczenie);
 		return $tab;
-	}	
+	}
+	
+	
+	public function aktualizujFtp($id = null, $nazwa = null)
+	{
+		$config = new Config;
+		$info = new Information;
+		 
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		$i=0;
+		foreach ($id as $ids) {
+			$sql = "UPDATE komponent_generator_tresci_ftp SET `nazwa` = '$nazwa[$i]' WHERE `id` = '$ids'";
+			$wynik=mysql_query($sql) or die(mysql_error());
+			$i++;
+		}
+		mysql_close($polaczenie);
+	}
+	
+	
+	public function delete_folder($folder) {
+	    $glob = glob($folder);
+	    foreach ($glob as $g) {
+	        if (!is_dir($g)) {
+	            unlink($g);
+	        } else {
+	            $this->delete_folder("$g/*");
+	            rmdir($g);
+	        }
+	    }
+	}
+	
+	
+	public function skasujFtp($id)
+	{
+		$config = new Config;
+		$info = new Information;
+		 
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$id;";
+		$wynik=mysql_query($sql) or die(mysql_error());
+		$odp = mysql_fetch_array($wynik);
+
+		$idRoot = $odp['idRoot'];
+		
+		$sql = "DELETE FROM komponent_generator_tresci_ftp WHERE id =$id";
+		$wynik=mysql_query($sql) or die(mysql_error());
+	
+		if ( ($idRoot == '') OR ($idRoot == null) OR ($idRoot == 0) OR ($idRoot == '0') ) {
+			$this->delete_folder("../../../../Files/".$odp['nazwa']);
+		} else {
+			$tmpIdRoot = $idRoot;
+			$path = '';
+				
+			while ($tmpIdRoot > 0) {
+				$sql = "SELECT nazwa, idRoot FROM komponent_generator_tresci_ftp WHERE `id`=$tmpIdRoot;";
+				$wynik=mysql_query($sql) or die(mysql_error());
+				$dir = mysql_fetch_array($wynik);
+				$tmpIdRoot = $dir['idRoot'];
+		
+				$path = $dir['nazwa'].'/'.$path;
+			}
+			
+			die('dd '.$path);
+			$this->delete_folder("../../../../Files/".$path."/".$odp['nazwa']);
+		}
+		
+		$sql = "DELETE FROM komponent_generator_tresci_ftp WHERE idRoot =$id";
+		$wynik=mysql_query($sql) or die(mysql_error());
+		
+		mysql_close($polaczenie);
+	}
+	
+	
+	public function dodajPlikDoFtp($nazwa = null, $idRoot = null)
+	{
+		$config = new Config;
+		$info = new Information;
+		 
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+	
+		$sql = "INSERT INTO komponent_generator_tresci_ftp (`id`, `idRoot`, `nazwa`, `typ`) VALUES ('', $idRoot, '$nazwa', 'file');";
+		$wynik=mysql_query($sql) or die(mysql_error());
+	
+		mysql_close($polaczenie);
+	}
 }
 
 ?>

@@ -3,9 +3,69 @@
   <?php
     /* INTERPRETOWANIE DANYCH OD KONTOLERA */
     $dane = $_SESSION['dane'];
-
+	$idRoot = $_SESSION['idRoot'];
+	
+	if ( ($idRoot == '') OR ($idRoot == null) ) {
+		$idRoot = 0;	
+	}	
   /* ######################################################### */
   ?>
+  
+	<style>
+		#podgladDir {
+		    width: 100%;
+		    height: 100%;
+		    background-color: rgba(0, 0, 0, 0.65);
+		    top: 0px;
+		    left: 0px;
+		    position: fixed;
+		    z-index: 99999999;
+		}
+		
+		#podgladBodyDir { 
+		    position: fixed;
+		    top: 50px;
+		    background: white;
+		    height: 100px;
+		    border: 10px solid black;
+		    transition-duration: 1s;
+		    z-index: 99999999999;
+		    width: 50%;
+		    margin-left: auto;
+		    margin-right: auto;
+		    left: 0;
+		    right: 0;
+		    display: block;
+		    border-radius: 10px;
+		}
+		
+		#podgladFile {
+		    width: 100%;
+		    height: 100%;
+		    background-color: rgba(0, 0, 0, 0.65);
+		    top: 0px;
+		    left: 0px;
+		    position: fixed;
+		    z-index: 99999999;
+		}
+		
+		#podgladBodyFile { 
+		    position: fixed;
+		    top: 50px;
+		    background: white;
+		    height: 50px;
+		    border: 10px solid black;
+		    transition-duration: 1s;
+		    z-index: 99999999999;
+		    width: 50%;
+		    margin-left: auto;
+		    margin-right: auto;
+		    left: 0;
+		    right: 0;
+		    display: block;
+		    border-radius: 10px;
+		}
+	</style>
   
   <h4>Menedżer plików</h4>
   <hr> 
@@ -34,17 +94,60 @@
                       echo '<input type="hidden" size="100" name="id[]" value="'.$id.'">';                                         
                       echo '<td> <input type="checkbox" name="zaznacz[]" value="'.$id.'"> </td>';
                       echo '<td> <input type="text" style="margin-bottom:10px; width:98%; margin-top: 10px;" size="100" name="nazwa[]" value="'.$nazwa.'"> </td>';
-                      echo '<td><a href="admin.php?edycjaPlikow='.$id.'"><img src="../../Store/cms_admin/img/edit.png"></img></a></td>';                                                                                            
+                      echo '<td><a href="admin.php?klientFtp='.$id.'"><img src="../../Store/cms_admin/img/edit.png"></img></a></td>';                                                                                            
                   echo '</tr>';
               }
 
               } 
 
           echo '<div class="submit" style="float:right;"><input type="submit" class="przycisk_red" name="skasuj" value="Skasuj zaznaczone" style="color: red;"></div>
-          <div class="submit" style="float:right;"><input type="submit" class="przycisk" name="dodaj_katalog" value="Dodaj katalog"></div>
-          <div class="submit" style="float:right;"><input type="submit" class="przycisk" name="dodaj_plik" value="Dodaj plik"></div>              
+          <div class="submit" style="float:right;"><a href="#" class="przycisk" onclick="podglad();">Dodaj katalog</a></div>
+          <div class="submit" style="float:right;"><a href="#" class="przycisk" onclick="podgladFile();">Prześlij pliki</a></div>              
           <div class="submit" style="float:right;"><input type="submit" class="przycisk" name="aktualizuj" value="Aktualizuj"></div>
           </form>
       </tbody>
       </table>';
   ?>
+
+
+<div id="podgladDir" style="display: none;">
+	<div id="podgladBodyDir">
+		<form action="admin.php?klientFtp=<?php echo $idRoot; ?>" method="post" accept-charset="utf-8">
+			<a href="#" onclick="podglad();" style="float: right; margin-top: 10px; margin-right: 10px;">Zamknij</a><br>
+			<input type="text" name="nazwaDir" style="width: 70%; margin-top: 40px; margin-left: 10px;" placeholder="Podaj nazwę katalogu...">
+			<div class="submit" style="float: right; margin-top: 40px;"><input type="submit" name="dodaj_katalog" class="przycisk" value="Dodaj katalog" style="margin: 0px;"></div>
+		</form>
+	</div>	
+</div>
+
+<div id="podgladFile" style="display: none;">
+	<div id="podgladBodyFile">
+		<form enctype="multipart/form-data" action="admin.php?uploadFile=<?php echo $idRoot; ?>" method="post" accept-charset="utf-8">
+			<a href="#" onclick="podgladFile();" style="float: right; margin-top: 10px; margin-right: 10px;">Zamknij</a><br>
+                    <input id="plik" multiple="true" style="margin: 0px; margin-left: 10px; margin-right: 10px;background-color: #BDBDBD; float: left;" name="plik[]" type="file" />
+			<div class="submit" style="float: left;"><input type="submit" class="przycisk" value="Wyślij" style="margin: 0px;"></div>
+		</form>
+	</div>	
+</div>
+
+<script>
+function podglad() {
+	if ($( "#podgladDir" ).hasClass( "show" )) {	
+	    $("#podgladDir").hide();
+	    $("#podgladDir").removeClass('show');
+	} else {
+		$("#podgladDir").show();
+		$("#podgladDir").addClass('show');
+	}
+}
+
+function podgladFile() {
+	if ($( "#podgladFile" ).hasClass( "show" )) {	
+	    $("#podgladFile").hide();
+	    $("#podgladFile").removeClass('show');
+	} else {
+		$("#podgladFile").show();
+		$("#podgladFile").addClass('show');
+	}
+}
+</script>
