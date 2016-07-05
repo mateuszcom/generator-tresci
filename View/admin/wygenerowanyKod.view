@@ -4,4 +4,4 @@
   /* ######################################################### */
   ?>
   
-  <textarea style="width: 90%; height: 500px; margin: 0 auto; display: block; margin-top: 30px; margin-bottom: 30px;"><?php echo $wygenerowanyKod; ?></textarea>
+  <textarea style="width: 90%; height: 500px; margin: 0 auto; display: block; margin-top: 30px; margin-bottom: 30px;"><?php if ($wygenerowanyKod != '') { echo $wygenerowanyKod[0]['html']; } ?></textarea>

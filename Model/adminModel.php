@@ -192,11 +192,13 @@ class AdminModel {
 	
 	public function generuj()
 	{	
-		$tmp = explode("|", $_COOKIE['uzyj']);
-		
-		$odp = '';
-		foreach ($tmp as $value) {
-			$odp = $odp.'<br>'.$this->pobierzPojednyczyKod($value);
+		if ( (isset($_COOKIE['uzyj'])) AND ($_COOKIE['uzyj'] != 0) AND ($_COOKIE['uzyj'] != '0') AND ($_COOKIE['uzyj'] != null) ) {
+			$tmp = explode("|", $_COOKIE['uzyj']);
+			
+			$odp = '';
+			foreach ($tmp as $value) {
+				$odp = $odp.'<br>'.$this->pobierzPojednyczyKod($value);
+			}
 		}
 		
 		return $odp;
@@ -309,7 +311,7 @@ class AdminModel {
 	{
 		$config = new Config;
 		$info = new Information;
-			
+
 		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
 		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
 		mysql_query ("SET NAMES utf8");

@@ -212,18 +212,20 @@ class Admin {
   private function szablonPodglad() {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$kafeki = $this->AdminModel->generuj();
-	  	$szablon = $this->AdminModel->pobierzSzablon(); /*DODAĆ ID SZABLONY*/
-	  	 
-	  	$odp = str_replace("|KAFELKI|", $kafeki, $szablon);
-	  	$odp = str_replace("|TYTUL|", $_COOKIE['tytul'], $odp);
-	  	$odp = str_replace("|CECHY|", $_COOKIE['cechy'], $odp);
-	  	$odp = str_replace("|OPIS-GORA|", $_COOKIE['tekstNad'], $odp);
-	  	$odp = str_replace("|OPIS-DOL|", $_COOKIE['tekstPod'], $odp);
-	  	 
-	  	$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.gif"></a></center><br><br><br>';
-	  	$odp = str_replace("|CROSS-SELLING|", $kodCrossSelling, $odp);
-	  	
-	  	echo $odp;
+	  	if ( $_COOKIE['szablon'] != '' ) {
+	  		$szablon = $this->AdminModel->pobierzSzablon($_COOKIE['szablon']);
+	  		
+	  		$odp = str_replace("|KAFELKI|", $kafeki, $szablon);
+	  		$odp = str_replace("|TYTUL|", $_COOKIE['tytul'], $odp);
+	  		$odp = str_replace("|CECHY|", $_COOKIE['cechy'], $odp);
+	  		$odp = str_replace("|OPIS-GORA|", $_COOKIE['tekstNad'], $odp);
+	  		$odp = str_replace("|OPIS-DOL|", $_COOKIE['tekstPod'], $odp);
+	  		 
+	  		$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.gif"></a></center><br><br><br>';
+	  		$odp = str_replace("|CROSS-SELLING|", $kodCrossSelling, $odp);
+	  		
+	  		echo $odp[0]['html'];	  		
+	  	}
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";
   	}  	
@@ -233,7 +235,9 @@ class Admin {
   private function dodajDoSzablonu() {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$kafeki = $this->AdminModel->generuj();
-	  	$szablon = $this->AdminModel->pobierzSzablon();
+	  	if ( $_COOKIE['szablon'] != '' ) {
+	  		$szablon = $this->AdminModel->pobierzSzablon($_COOKIE['szablon']);
+	  	}
 	  	
 	  	$odp = str_replace("|KAFELKI|", $kafeki, $szablon);
 	  	$odp = str_replace("|TYTUL|", $_COOKIE['tytul'], $odp);
@@ -259,11 +263,22 @@ class Admin {
   private function generator() {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$hash = $_COOKIE['hash'];
+	  	$idSzablon = $_COOKIE['szablon'];
+	  	$this->set('idSzablon', $idSzablon);
+	  	$this->set('aktywnyCrossSelling', $_COOKIE['crossSelling']);
 	  	
+	  	if (!isset($idSzablon)) {
+	  		$idSzablon = 0;
+	  	}
+	  	
+	  	$this->set('szablony', $this->AdminModel->pobierzSzablony());
 	  	$this->set('wygenerowanyKod', $this->AdminModel->generuj()); /* KOD DLA KAFELKÓW */
 	  	$this->set('crossSelling', $this->AdminModel->pobierzProduktyCrossSelling());
-		//$this->set('obszary', $this->AdminModel->pobierzObszary());
-		$this->set('cache', $this->AdminModel->pobierzCache($hash));
+		
+	  	if ( $idSzablon != '' ) {
+	  		$this->set('obszary', $this->AdminModel->pobierzObszary($idSzablon));
+	  		$this->set('cache', $this->AdminModel->pobierzCache($hash));
+	  	}
 	  	 
 	  	$this->LayPanel = new LayoutPanelAdmin();
 	  	$this->set('adres', '../../');
@@ -277,7 +292,7 @@ class Admin {
   private function addCache($obszar = null) {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$hash = $_COOKIE['hash'];
-		
+	  	
 		$this->AdminModel->addCache($hash, $obszar, $_POST['code']);
 	} else {
 		echo "<script>window.location = '../../admin.php'</script>";

@@ -3,14 +3,152 @@
     $crossSelling = $_SESSION['crossSelling'];
     $cache = $_SESSION['cache'];
     $wygenerowanyKod = $_SESSION['wygenerowanyKod'];
+    $szablony = $_SESSION['szablony'];
+    $obszary = $_SESSION['obszary'];
+    $idSzablonu = $_SESSION['idSzablon'];
+    $aktywnyCrossSelling = $_SESSION['aktywnyCrossSelling'];
   /* ######################################################### */
   ?>
 
+   <?php                               
+   $selector = '';
+   $first = 0;
+   if(sizeof($obszary))
+               foreach ($obszary as $z) {
+                  if ($first == 0) {
+                    $selector = "textarea#textCrossSelling".$z['id'].$selector;
+                    $first = 1;
+                  } else {
+                    $selector = $selector.",textarea#textCrossSelling".$z['id'];  
+                  }
+                }
+   ?>
+                  
+
+   <?php    
+       $ajaxTmp = '';                           
+       if(sizeof($obszary))
+       foreach ($obszary as $z) {
+            $ajaxTmp = $ajaxTmp."$.post( \"admin.php?addCache=obszar".$z['id']."\", { code: tinyMCE.get('textCrossSelling".$z['id']."').getContent() } );";
+       }
+   ?>
+
+                               
+   <!-- TinyMCE -->
+    <script type="text/javascript" src="<?php echo $adres; ?>Store/cms_admin/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            tinymce.init({
+                selector: "<?php echo $selector; ?>",
+                theme: "modern",
+                width: "99%",
+                height: 400,
+                language : 'pl',
+                convert_urls: false,
+                plugins: [
+                     "advlist autolink link image lists charmap print preview hr anchor pagebreak spellchecker",
+                     "searchreplace wordcount visualblocks visualchars code fullscreen insertdatetime media nonbreaking",
+                     "save table contextmenu directionality emoticons template paste textcolor"
+                ],
+                content_css: "css/content.css",
+                toolbar: "insertfile undo redo | styleselect | bold italic | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent | l      ink image | print preview media fullpage | forecolor backcolor emoticons", 
+                
+                setup: function(editor) {
+                    editor.on('change', function(e) {
+                        <?php echo $ajaxTmp; ?>
+                    });
+                },
+   
+                style_formats: [
+                    {title: 'Bold text', inline: 'b'},
+                    {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+                    {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+                    {title: 'Tytuł h1', block: 'h1', styles: {}},
+                    {title: 'Tytuł h2', block: 'h2', styles: {}},
+                    {title: 'Tytuł h3', block: 'h3', styles: {}},
+                    {title: 'Tytuł h4', block: 'h4', styles: {}},
+                    {title: 'Example 1', inline: 'span', classes: 'example1'},
+                    {title: 'Example 2', inline: 'span', classes: 'example2'},
+                    {title: 'Table styles'},
+                    {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+                ]
+            }); 
+            
+        });
+    </script>
+    <!-- /TinyMCE -->
+    
 <style>
     .boxContent {
         background-color: #f5f5f5;
         padding: 10px;
         border: 1px solid #d8d8d8;
+    }
+    
+    .section {
+        clear: both;
+    }
+    
+    label {
+        font-weight: bold;
+        margin-top: 50px;
+        display: block;
+        font-size: 15px;
+    }
+    
+    #generujMenu {
+        background: red;
+        position: fixed;
+        right: 0px;
+        top: 220px;
+        padding: 10px;
+        border-top-left-radius: 10px;
+        border-bottom-left-radius: 10px;
+        transition-duration:1s;
+        z-index: 999999999;
+    }
+    
+    #generujMenu a {
+        color: white;
+        text-decoration: none;
+        font-weight: bold;
+        padding: 10px;
+        border-radius: 10px;
+        border: 2px solid;
+        text-align: center;
+        display: block;
+    }
+    
+    .hiddenRight {
+        margin-right: -120px;
+    }
+    
+    #podglad {
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.65);
+        top: 0px;
+        left: 0px;
+        position: fixed;
+        z-index: 99999999;
+    }
+    
+    #podgladBody { 
+        position: fixed;
+        top: 50px;
+        background: white;
+        overflow-y: scroll;
+        height: 580px;
+        border: 10px solid black;
+        transition-duration: 1s;
+        z-index: 99999999999;
+        width: 80%;
+        margin-left: auto;
+        margin-right: auto;
+        left: 0;
+        right: 0;
+        display: block;
+        border-radius: 10px;
     }
 </style>
 <br>
@@ -44,41 +182,163 @@ echo '<div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align
                      <div class="reklamy st_view" style="overflow-y: auto;">
                               <div class="st_view_inner">
                                  <div id="tab">
-                                             
-                                      
-                               <label>Kafelki:</label>
                                
-                               <div class="boxContent"><?php echo $wygenerowanyKod; ?></div>
-                                    
-                               <label>Cross-selling:</label>
-                               <?php
-                                   echo "<select name='reklama' id='crossSelling'>";
-                                   echo "<option value='0'>brak</option>";
-                                                                  
-                                   if(sizeof($crossSelling))
-                                       foreach ($crossSelling as $z) {
-                                            echo "<option value='".$z['id']."' $sel>".$z['nazwa']."</option>";
-                                       }
-                                   echo "</select>";
+                               <div class="section">              
+                                   <label>Szablon:</label>
+                                   <?php
+                                       echo "<select name='szablon' id='szablon'>";
+                                       echo "<option value='0'>Wybierz...</option>";
+                                                                      
+                                       if(sizeof($szablony))
+                                           foreach ($szablony as $z) {
+                                                if ( $idSzablonu == $z['id'] ) {
+                                                    echo "<option selected value='".$z['id']."' $sel>".$z['nazwaSzablonu']."</option>";
+                                                } else {
+                                                    echo "<option value='".$z['id']."' $sel>".$z['nazwaSzablonu']."</option>";    
+                                                }
+                                           }
+                                       echo "</select>";
+                                   ?>
+                               </div>
+                               
+                               <br>
+                               <hr>
+
+                               <?php                               
+                               if(sizeof($obszary))
+                                           foreach ($obszary as $z) {
+                                               echo '<div class="section">';
+                                                   echo '<label>Obszar - '.$z['nazwaObszaru'].'</label><br>';
+                                                   
+                                                   $tmp = 0;
+                                                   if(sizeof($cache))
+                                                       foreach ($cache as $x) {
+                                                           if ( $x['obszar'] == "obszar".$z['id'] ) {
+                                                                echo '<textarea id="textCrossSelling'.$z['id'].'">'.$x['html'].'</textarea>';
+                                                                $tmp = 1;
+                                                           }
+                                                       }
+                                                   
+                                                   if ( $tmp == 0 ) {
+                                                        echo '<textarea id="textCrossSelling'.$z['id'].'"></textarea>';
+                                                   }
+                                               echo '</div>';
+                                            }
                                ?>
                                
-                               <div class="boxContent crossSelling"></div>
-                               <textarea id="textCrossSelling" style="display:none;"></textarea>
+                               <div class="section">
+                                   <label>Kafelki:</label>
+                                   <br>
+                                   Operacje: <b><a href="admin.php">dodaj kafelki</a>  |  <a href="javascript:void(0)" onclick="eraseKafelki();">wyczyść kafelki</a></b>
+                                   <br>
+                                   <div class="boxContent"><?php echo $wygenerowanyKod; ?></div>
+                               </div>
+                                    
+                               <div class="section">
+                                   <label>Cross-selling:</label>
+                                   <br>
+                                   <?php
+                                       echo "<select name='reklama' id='crossSelling'>";
+                                       echo "<option value='0'>brak</option>";
+                                                                      
+                                       if(sizeof($crossSelling))
+                                           foreach ($crossSelling as $z) {
+                                                if ( $aktywnyCrossSelling == $z['id'] ) {
+                                                    echo "<option selected value='".$z['id']."' $sel>".$z['nazwa']."</option>";
+                                                } else {
+                                                    echo "<option value='".$z['id']."' $sel>".$z['nazwa']."</option>";    
+                                                }
+                                           }
+                                       echo "</select>";
+                                   ?>
+                                   
+                                   <div class="boxContent crossSelling"> <?php if ($aktywnyCrossSelling != 0) { ?> <center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></div>
+                                   <textarea id="textCrossSelling" style="display:none;"> <?php if ($aktywnyCrossSelling != 0) { ?>  <center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></textarea>
+                               </div>
                         </div>
                     </div>
                  </div>
             </div>
        </div>
        
+       
+       <div id="generujMenu" class="hiddenRight">
+            <a href="javascript:void(0)" onclick="podglad();">Podgląd</a><br>
+            <a href="javascript:void(0)" onclick="eraseAll();">Wyczyść</a><br>
+            <a href="admin.php?dodajDoSzablonu">Wygeneruj HTML</a><br>
+       </div>
+               
+       <div id="podglad" style="display: none;">
+            <div id="podgladBody"></div>    
+       </div>
 <script>
+
+function podglad() {
+    if ($( "#podglad" ).hasClass( "show" )) {   
+        $("#podglad").hide();
+        $("#podglad").removeClass('show');
+        $("#podgladBody").html('');
+    } else {
+        ajax();
+        $("#podglad").show();
+        $("#podglad").addClass('show');
+    }
+}
+
+/* --- CHOWANIE BOCZNYCH WIDGETÓW --- */    
+    $("#generujMenu").hover(function(){
+        $('#generujMenu').removeClass('hiddenRight');
+    },function(){
+        $('#generujMenu').addClass('hiddenRight');
+    });
+/* KONIEC --- CHOWANIE BOCZNYCH WIDGETÓW --- */
 
 $( "#crossSelling" ).change(function() {
   if ( $( "#crossSelling" ).val() != '0') {
     $(".crossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
-    $("#textCrossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');    
+    $("#textCrossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
+    document.cookie = "crossSelling="+$( "#crossSelling" ).val();    
   } else {
     $(".crossSelling").html('');
     $("#textCrossSelling").html('');
+    document.cookie = "crossSelling=0";
   }
 });
+
+$( "#szablon" ).change(function() {
+    if ( $( "#szablon" ).val() != '0') {
+        document.cookie = "szablon="+$( "#szablon" ).val();
+    } else {
+        document.cookie = "szablon="+$( "#szablon" ).val();
+    }
+    
+    location.reload();
+});
+
+
+function eraseKafelki() {
+    document.cookie = "uzyj="; 
+    location.reload(); 
+}
+
+function eraseAll() {
+    document.cookie = "uzyj=";
+    document.cookie = "szablon="; 
+    document.cookie = "crossSelling=";
+    $.post( "admin.php?eraseObszar", {} );
+    
+    
+    location.reload(); 
+}
+
+function ajax() {
+    $.ajax({
+        method : "POST",
+        url: 'admin.php?szablonPodglad',
+        data : "data",
+        success: function(result) {
+            $("#podgladBody").html(result)
+        }
+    });
+}
 </script>
