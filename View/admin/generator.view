@@ -1,0 +1,84 @@
+  <?php
+    /* INTERPRETOWANIE DANYCH OD KONTOLERA */
+    $crossSelling = $_SESSION['crossSelling'];
+    $cache = $_SESSION['cache'];
+    $wygenerowanyKod = $_SESSION['wygenerowanyKod'];
+  /* ######################################################### */
+  ?>
+
+<style>
+    .boxContent {
+        background-color: #f5f5f5;
+        padding: 10px;
+        border: 1px solid #d8d8d8;
+    }
+</style>
+<br>
+
+<link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Store/cms_admin/css/slidetabs/template.css' />
+    <link rel='stylesheet' type='text/css' media='all' href='<?php echo $adres; ?>Components/reklama-allegro/Store/css/style_reklama.css' />
+
+    <script type="text/javascript">jQuery(document).ready(function() {jQuery("#slidetabs_45").slidetabs({ totalWidth: 'auto', tabActive: 1, useWebKit: true, tabsScroll: true, touchSupport: true, ajaxCache: true, ajaxSpinner: true, ajaxError: 'Failed to load content', autoplayInterval: 5000, tabsAlignment: 'align_top', tabsToSlide: 1, tabsAnimSpeed: 300, buttonsFunction: 'slide', tabsEasing: '', contentAnimSpeed: 500, contentAnim: 'slideH', autoHeight: false, autoHeightSpeed: 300, textConversion: 'pb', contentEasing: 'easeInOutQuart', autoplay: false, orientation: 'horizontal' });});</script>
+    <script type='text/javascript' src='<?php echo $adres; ?>Store/cms_admin/js/slidetabs/jquery.slidetabs.pack.js'></script>
+    
+ <?php
+
+echo '<div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align_top">
+
+            <div class="st_tabs">
+                  <a href="#" class="st_prev">prev</a>
+                  <a href="#" class="st_next">next</a>
+                  
+                  <div class="st_tabs_wrap">
+                      <ul class="st_tabs_ul">             
+                          <li>
+                              <a href="#reklamy" rel="reklamy" class="st_tab st_tab_2">Tworzenie aukcji</a>
+                          </li>
+
+                      </ul>
+                  </div>
+              </div>';?>
+              
+              <div class="st_views">
+
+                     <div class="reklamy st_view" style="overflow-y: auto;">
+                              <div class="st_view_inner">
+                                 <div id="tab">
+                                             
+                                      
+                               <label>Kafelki:</label>
+                               
+                               <div class="boxContent"><?php echo $wygenerowanyKod; ?></div>
+                                    
+                               <label>Cross-selling:</label>
+                               <?php
+                                   echo "<select name='reklama' id='crossSelling'>";
+                                   echo "<option value='0'>brak</option>";
+                                                                  
+                                   if(sizeof($crossSelling))
+                                       foreach ($crossSelling as $z) {
+                                            echo "<option value='".$z['id']."' $sel>".$z['nazwa']."</option>";
+                                       }
+                                   echo "</select>";
+                               ?>
+                               
+                               <div class="boxContent crossSelling"></div>
+                               <textarea id="textCrossSelling" style="display:none;"></textarea>
+                        </div>
+                    </div>
+                 </div>
+            </div>
+       </div>
+       
+<script>
+
+$( "#crossSelling" ).change(function() {
+  if ( $( "#crossSelling" ).val() != '0') {
+    $(".crossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
+    $("#textCrossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');    
+  } else {
+    $(".crossSelling").html('');
+    $("#textCrossSelling").html('');
+  }
+});
+</script>

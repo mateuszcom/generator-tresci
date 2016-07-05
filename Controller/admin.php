@@ -49,8 +49,8 @@ class Admin {
         $this->dodajDoSzablonu();
     } elseif (isset($_GET['szablonPodglad'])) {
         $this->szablonPodglad();
-    } elseif (isset($_GET['edycjaSzablonu'])) {
-        $this->edycjaSzablonu();
+    } elseif (isset($_GET['generator'])) {
+        $this->generator();
     } elseif (isset($_GET['addCache'])) {
         $this->addCache($_GET['addCache']);
     } elseif (isset($_GET['eraseObszar'])) {
@@ -256,17 +256,18 @@ class Admin {
   }
   
 
-  private function edycjaSzablonu() {
+  private function generator() {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$hash = $_COOKIE['hash'];
 	  	
+	  	$this->set('wygenerowanyKod', $this->AdminModel->generuj()); /* KOD DLA KAFELKÓW */
 	  	$this->set('crossSelling', $this->AdminModel->pobierzProduktyCrossSelling());
-		$this->set('obszary', $this->AdminModel->pobierzObszary());
+		//$this->set('obszary', $this->AdminModel->pobierzObszary());
 		$this->set('cache', $this->AdminModel->pobierzCache($hash));
 	  	 
 	  	$this->LayPanel = new LayoutPanelAdmin();
 	  	$this->set('adres', '../../');
-	  	$this->LayPanel->wyswietlStrone('./View/admin/edycjaSzablonu.view');
+	  	$this->LayPanel->wyswietlStrone('./View/admin/generator.view');
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";
   	}  	
