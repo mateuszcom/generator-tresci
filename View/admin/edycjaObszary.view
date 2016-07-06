@@ -65,7 +65,7 @@ echo '        <div id="slidetabs_45" class="clean_rounded clean_rounded-horizont
 	                                                          echo"<tr>";
 	                                                          echo "<td><input type='checkbox' name='zaznacz[]' value='".$z[id]."'><input name='id[]' type='hidden' value='$z[id]' /></td>
 	                                                          <td><input type='text' name='nazwa[]' value='$z[nazwaObszaru]'></td>
-	                                                          <td>|Obszar".$z[id]."|</td>			
+	                                                          <td>|obszar".$z[id]."|</td>			
 	
 	                                                          </tr>";
 	                                                        }
