@@ -3,5 +3,134 @@
     $wygenerowanyKod = $_SESSION['wygenerowanyKod'];
   /* ######################################################### */
   ?>
+  <link rel='stylesheet' type='text/css' media='all' href='../../Components/reklama-allegro/Store/css/style_reklama.css' />
+
+  <br>
   
-  <textarea style="width: 90%; height: 500px; margin: 0 auto; display: block; margin-top: 30px; margin-bottom: 30px;"><?php if ($wygenerowanyKod != '') { echo $wygenerowanyKod[0]['html']; } ?></textarea>
+  <div style="margin-top:10px; margin-left:5px; overflow-x: auto;">
+        <button onclick="saveTextAsFile()" style="color: red; margin-left: 10px; margin-right: 10px;">Pobierz na dysk</button>
+        <button onclick="podglad()" style="margin-left: 10px; margin-right: 10px;">Pokaż kod HTML</button>
+  </div>
+
+  <br><br>
+
+<!-- TinyMCE -->
+    <script type="text/javascript" src="<?php echo $adres; ?>Store/cms_admin/js/tinymce/tinymce.min.js"></script>
+    <script type="text/javascript">
+        $(function(){
+            tinymce.init({
+                selector: "textarea#kod",
+                theme: "modern",
+                width: "99%",
+                height: 500,
+                language : 'pl',
+                convert_urls: false,
+                plugins: [],
+                content_css: "css/content.css",
+                toolbar: false,
+                menubar: false,
+                readonly : 1,
+   
+                style_formats: [
+                    {title: 'Bold text', inline: 'b'},
+                    {title: 'Red text', inline: 'span', styles: {color: '#ff0000'}},
+                    {title: 'Red header', block: 'h1', styles: {color: '#ff0000'}},
+                    {title: 'Tytuł h1', block: 'h1', styles: {}},
+                    {title: 'Tytuł h2', block: 'h2', styles: {}},
+                    {title: 'Tytuł h3', block: 'h3', styles: {}},
+                    {title: 'Tytuł h4', block: 'h4', styles: {}},
+                    {title: 'Example 1', inline: 'span', classes: 'example1'},
+                    {title: 'Example 2', inline: 'span', classes: 'example2'},
+                    {title: 'Table styles'},
+                    {title: 'Table row 1', selector: 'tr', classes: 'tablerow1'}
+                ]
+            }); 
+            
+        });
+    </script>
+    <!-- /TinyMCE -->
+    
+    <style>
+        #mce_2 {
+            margin: 0 auto;
+        }
+        
+        #mce_4 {
+            display: none;
+        }
+
+        #podglad {
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.65);
+            top: 0px;
+            left: 0px;
+            position: fixed;
+            z-index: 99999999;
+        }
+        
+        #podgladBody { 
+            position: fixed;
+            top: 50px;
+            background: white;
+            overflow: hidden;
+            height: 580px;
+            border: 10px solid black;
+            transition-duration: 1s;
+            z-index: 99999999999;
+            width: 80%;
+            margin-left: auto;
+            margin-right: auto;
+            left: 0;
+            right: 0;
+            display: block;
+            border-radius: 10px;
+        }        
+    </style>
+      
+  <textarea style="width: 90%; height: 500px; margin: 0 auto; display: block; margin-top: 30px; margin-bottom: 30px;" id="kod"><?php if ($wygenerowanyKod != '') { echo $wygenerowanyKod; } ?></textarea>
+  <br><br>
+  
+   <div id="podglad" style="display: none;">
+        <div id="podgladBody"><br><button onclick="podglad()" style="margin-left: 10px; margin-right: 10px; float: right; margin-bottom: 20px;">Zamknij</button><textarea style="width: 98%; height: 500px; margin: 0 auto; display: block;" id="kod-hide"><?php if ($wygenerowanyKod != '') { echo $wygenerowanyKod; } ?></textarea></div>    
+   </div>  
+<script>
+
+function podglad() {
+    if ($( "#podglad" ).hasClass( "show" )) {   
+        $("#podglad").hide();
+        $("#podglad").removeClass('show');
+    } else {
+        $("#podglad").show();
+        $("#podglad").addClass('show');
+    }
+}
+
+function saveTextAsFile()
+{
+    var textToWrite = $('#kod').text();
+    var textFileAsBlob = new Blob([textToWrite], {encoding:"UTF-8", type:'text/html;charset=UTF-8'});
+    var fileNameToSaveAs = "tresc.html"
+
+    var downloadLink = document.createElement("a");
+    downloadLink.download = fileNameToSaveAs;
+    downloadLink.innerHTML = "Download File";
+    if (window.webkitURL != null)
+    {
+        // Chrome allows the link to be clicked
+        // without actually adding it to the DOM.
+        downloadLink.href = window.webkitURL.createObjectURL(textFileAsBlob);
+    }
+    else
+    {
+        // Firefox requires the link to be added to the DOM
+        // before it can be clicked.
+        downloadLink.href = window.URL.createObjectURL(textFileAsBlob);
+        downloadLink.onclick = destroyClickedElement;
+        downloadLink.style.display = "none";
+        document.body.appendChild(downloadLink);
+    }
+
+    downloadLink.click();
+}
+</script>

@@ -50,14 +50,24 @@ echo '        <div id="slidetabs_45" class="clean_rounded clean_rounded-horizont
                                                       
                                                       <div class="holder"></div>
                                                       
-														  <table style="width: auto; clear:both; text-align: center; margin: 0 auto;">
+														  <table style="width: auto; clear:both; text-align: left; margin: 0 auto;">
 	                                                      <tbody id="itemContainer">
 	                                                      
-	                                                        <tr>
+	                                                        <tr style="text-align: center;">
 	                                                          <th></th>
 	                                                          <th>Nazwa obszaru tekstowego</th>
 	                                                          <th>Krótki kod</th>      
 	                                                        </tr>
+	                                                        <tr>
+	                                                            <td></td>
+	                                                            <td>Miejsce dla kafelków</td>
+	                                                            <td>|kafelki|</td>
+	                                                        </tr>
+                                                            <tr>
+                                                                <td></td>
+                                                                <td>Miejsce dla modułu cross selling</td>
+                                                                <td>|cross-selling|</td>
+                                                            </tr>	                                                        
 	                                                      <?php
 	                                                        if(sizeof($obszary))
 	                                                        foreach ($obszary as $z) {

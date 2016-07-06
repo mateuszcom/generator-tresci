@@ -232,12 +232,6 @@ class Admin {
 	  						}
 	  					}
 	  			}
-	  			  		
-	  		/*$odp = str_replace("|KAFELKI|", $kafeki, $szablon[0]['html']);
-	  		$odp = str_replace("|TYTUL|", $_COOKIE['tytul'], $odp);
-	  		$odp = str_replace("|CECHY|", $_COOKIE['cechy'], $odp);
-	  		$odp = str_replace("|OPIS-GORA|", $_COOKIE['tekstNad'], $odp);
-	  		$odp = str_replace("|OPIS-DOL|", $_COOKIE['tekstPod'], $odp);*/
 	  		
 	  		$odp = str_replace("|kafelki|", $kafeki, $odp);
 	  		
@@ -257,17 +251,30 @@ class Admin {
 	  	$kafeki = $this->AdminModel->generuj();
 	  	if ( $_COOKIE['szablon'] != '' ) {
 	  		$szablon = $this->AdminModel->pobierzSzablon($_COOKIE['szablon']);
+	  		
+	  		$hash = $_COOKIE['hash'];
+	  		$obszary = $this->AdminModel->pobierzObszary($szablon[0]['id']);
+	  		$cache = $this->AdminModel->pobierzCache($hash);
+	  		
+	  		$odp = $szablon[0]['html'];
+	  		
+	  		if(sizeof($obszary))
+	  			foreach ($obszary as $z) {
+	  				
+	  				if(sizeof($cache))
+	  					foreach ($cache as $x) {
+	  						
+	  						if ( "obszar".$z['id'] == $x['obszar'] ) {
+	  							$odp = str_replace("|obszar".$z['id']."|", $x['html'], $odp);
+	  						}
+	  					}
+	  			}
+	  		
+	  		$odp = str_replace("|kafelki|", $kafeki, $odp);
+	  		
+	  		$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.gif"></a></center><br><br><br>';
+	  		$odp = str_replace("|cross-selling|", $kodCrossSelling, $odp);
 	  	}
-	  	
-	  	$odp = str_replace("|KAFELKI|", $kafeki, $szablon);
-	  	$odp = str_replace("|TYTUL|", $_COOKIE['tytul'], $odp);
-	  	$odp = str_replace("|CECHY|", $_COOKIE['cechy'], $odp);
-	  	$odp = str_replace("|OPIS-GORA|", $_COOKIE['tekstNad'], $odp);
-	  	$odp = str_replace("|OPIS-DOL|", $_COOKIE['tekstPod'], $odp);
-	  	
-	  	$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['cross'].'/ad.gif"></a></center><br><br><br>';
-	  	$odp = str_replace("|CROSS-SELLING|", $kodCrossSelling, $odp);
-	
 	  	
 	  	$this->set('wygenerowanyKod', $odp);
 	  	
