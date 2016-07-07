@@ -7,6 +7,7 @@
     $obszary = $_SESSION['obszary'];
     $idSzablonu = $_SESSION['idSzablon'];
     $aktywnyCrossSelling = $_SESSION['aktywnyCrossSelling'];
+    $adresCrosseling = $_SESSION['adresCrosseling'];
   /* ######################################################### */
   ?>
 
@@ -252,8 +253,8 @@ echo '<div id="slidetabs_45" class="clean_rounded clean_rounded-horizontal align
                                        echo "</select>";
                                    ?>
                                    
-                                   <div class="boxContent crossSelling"> <?php if ($aktywnyCrossSelling != 0) { ?> <center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></div>
-                                   <textarea id="textCrossSelling" style="display:none;"> <?php if ($aktywnyCrossSelling != 0) { ?>  <center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></textarea>
+                                   <div class="boxContent crossSelling"> <?php if ($aktywnyCrossSelling != 0) { ?> <center><a href="http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></div>
+                                   <textarea id="textCrossSelling" style="display:none;"> <?php if ($aktywnyCrossSelling != 0) { ?>  <center><a href="http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.php" target="_blank"><img src="http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/<?php echo $aktywnyCrossSelling; ?>/ad.gif"></a></center><?php } ?></textarea>
                                </div>
                         </div>
                     </div>
@@ -295,8 +296,8 @@ function podglad() {
 
 $( "#crossSelling" ).change(function() {
   if ( $( "#crossSelling" ).val() != '0') {
-    $(".crossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
-    $("#textCrossSelling").html('<center><a href=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
+    $(".crossSelling").html('<center><a href=\"http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
+    $("#textCrossSelling").html('<center><a href=\"http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.php\" target=\"_blank\"><img src=\"http://<?php echo $_SERVER['HTTP_HOST'].$adresCrosseling; ?>/Components/reklama-allegro/Store/produkty/'+$( "#crossSelling" ).val()+'/ad.gif\"></a></center>');
     document.cookie = "crossSelling="+$( "#crossSelling" ).val();    
   } else {
     $(".crossSelling").html('');

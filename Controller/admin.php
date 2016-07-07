@@ -73,6 +73,8 @@ class Admin {
         $this->klientFtp($_GET['klientFtp']);
     } elseif (isset($_GET['uploadFile'])) {
         $this->uploadFile($_GET['uploadFile']);
+    } elseif (isset($_GET['eraseCache'])) {
+        $this->eraseCache();
     } else {
 		    $this->uruchomKomponent();
 		}			
@@ -213,6 +215,9 @@ class Admin {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$kafeki = $this->AdminModel->generuj();
 	  	if ( $_COOKIE['szablon'] != '' ) {
+	  		$adres = $this->AdminModel->sciezkaFiles();
+	  		$this->set('adresCrosseling', $adres);
+	  		
 	  		$szablon = $this->AdminModel->pobierzSzablon($_COOKIE['szablon']);
 	  		
 	  		$hash = $_COOKIE['hash'];
@@ -223,20 +228,29 @@ class Admin {
 	  		
 	  		if(sizeof($obszary))
 	  			foreach ($obszary as $z) {
-	  				
+	  				$tmp = 0;
 	  				if(sizeof($cache))
 	  					foreach ($cache as $x) {
 	  						
 	  						if ( "obszar".$z['id'] == $x['obszar'] ) {
 	  							$odp = str_replace("|obszar".$z['id']."|", $x['html'], $odp);
+	  							$tmp = 1;
 	  						}
 	  					}
+	  				
+	  				if ( $tmp == 0 ) {
+	  					$odp = str_replace("|obszar".$z['id']."|", '', $odp);
+	  				}
 	  			}
 	  		
 	  		$odp = str_replace("|kafelki|", $kafeki, $odp);
 	  		
-	  		$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.gif"></a></center><br><br><br>';
-	  		$odp = str_replace("|cross-selling|", $kodCrossSelling, $odp);
+	  		if ( (isset($_COOKIE['crossSelling'])) AND ($_COOKIE['crossSelling'] != 0) AND ($_COOKIE['crossSelling'] != '0') ) {
+		  		$kodCrossSelling = '<br><br><br><center><a href="http://'.$_SERVER['HTTP_HOST'].$adres.'/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.php" target="_blank"><img src="http://'.$_SERVER['HTTP_HOST'].$adres.'/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.gif"></a></center><br><br><br>';
+		  		$odp = str_replace("|cross-selling|", $kodCrossSelling, $odp);
+	  		} else {
+	  			$odp = str_replace("|cross-selling|", '', $odp);
+	  		}
 	  		
 	  		echo $odp;	  		
 	  	}
@@ -250,6 +264,9 @@ class Admin {
   	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
 	  	$kafeki = $this->AdminModel->generuj();
 	  	if ( $_COOKIE['szablon'] != '' ) {
+	  		$adres = $this->AdminModel->sciezkaFiles();
+	  		$this->set('adresCrosseling', $adres);
+
 	  		$szablon = $this->AdminModel->pobierzSzablon($_COOKIE['szablon']);
 	  		
 	  		$hash = $_COOKIE['hash'];
@@ -260,20 +277,29 @@ class Admin {
 	  		
 	  		if(sizeof($obszary))
 	  			foreach ($obszary as $z) {
-	  				
+	  				$tmp = 0;
 	  				if(sizeof($cache))
 	  					foreach ($cache as $x) {
 	  						
 	  						if ( "obszar".$z['id'] == $x['obszar'] ) {
 	  							$odp = str_replace("|obszar".$z['id']."|", $x['html'], $odp);
+	  							$tmp = 1;
 	  						}
 	  					}
+	  				
+	  				if ( $tmp == 0 ) {
+	  					$odp = str_replace("|obszar".$z['id']."|", '', $odp);
+	  				}
 	  			}
 	  		
 	  		$odp = str_replace("|kafelki|", $kafeki, $odp);
 	  		
-	  		$kodCrossSelling = '<br><br><br><center><a href="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.php" target="_blank"><img src="http://digital-it.pl/sites/web/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.gif"></a></center><br><br><br>';
-	  		$odp = str_replace("|cross-selling|", $kodCrossSelling, $odp);
+	  		if ( (isset($_COOKIE['crossSelling'])) AND ($_COOKIE['crossSelling'] != 0) AND ($_COOKIE['crossSelling'] != '0') ) {
+		  		$kodCrossSelling = '<br><br><br><center><a href="http://'.$_SERVER['HTTP_HOST'].$adres.'/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.php" target="_blank"><img src="http://'.$_SERVER['HTTP_HOST'].$adres.'/Components/reklama-allegro/Store/produkty/'.$_COOKIE['crossSelling'].'/ad.gif"></a></center><br><br><br>';
+		  		$odp = str_replace("|cross-selling|", $kodCrossSelling, $odp);
+	  		} else {
+	  			$odp = str_replace("|cross-selling|", '', $odp);
+	  		}
 	  	}
 	  	
 	  	$this->set('wygenerowanyKod', $odp);
@@ -589,6 +615,16 @@ class Admin {
   			echo "<script>window.location = '".$config->files."/Components/generator-tresci/admin.php?klientFtp=$idRoot'</script>";
   		}
   
+  	} else {
+  		echo "<script>window.location = '../../admin.php'</script>";
+  	}
+  }
+  
+  
+  private function eraseCache() {
+  	if ( ($_SESSION['zalogowany'] == $this->tmpZalogowany) OR ($_SESSION['zalogowany'] == $this->tmpZalogowanyAdmin) ) {
+  		$this->AdminModel->eraseCache();
+  		echo "<script>window.location = 'admin.php?ustawienia'</script>";
   	} else {
   		echo "<script>window.location = '../../admin.php'</script>";
   	}

@@ -741,6 +741,21 @@ class AdminModel {
 	
 		mysql_close($polaczenie);
 	}
+	
+
+	public function eraseCache()
+	{
+		$config = new Config;
+		$info = new Information;
+			
+		$polaczenie = mysql_connect($config->sql_host,$config->sql_user,$config->sql_pass); /* Nawi�zanie po��czenia z baz� */
+		mysql_select_db($config->sql_db_name,$polaczenie); /* Wybranie odpowiedniej bazy danych */
+		mysql_query ("SET NAMES utf8");
+		$sql = "TRUNCATE TABLE komponent_generator_tresci_cache;";
+		$wynik=mysql_query($sql) or die(mysql_error());
+	
+		mysql_close($polaczenie);
+	}
 }
 
 ?>
