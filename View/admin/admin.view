@@ -1,4 +1,4 @@
-  <?php
+   <?php
     /* INTERPRETOWANIE DANYCH OD KONTOLERA */
     $grupy = $_SESSION['grupy'];
   /* ######################################################### */
